@@ -28,6 +28,16 @@ I never liked the linux solutions to type special characters (compose key and co
 
 The second part of this guile-based xbindkeys configuration file is an attempt to achieve this goal, and is still in progress.
 
+## Known bugs
+
+* xdotool and Coverflow Alt-Tab gnome shell extension won't work together, disabling the alt+tab mouse wheel emulator (https://github.com/dmo60/CoverflowAltTab/issues/127)
+
+* xdotool alt+numpad key binding doesn't work with Firefox (https://stackoverflow.com/questions/65396750/xdotool-key-ignored-by-firefox-while-working-on-other-windows)
+
+## Future developments
+
+* Emulate the windows style alt + numpad key code (press alt, type ascii code digit by digit, release alt) instead of the 10 shortcuts.
+
 ## Sources
 
 Awesome script created by Zero Angel (https://www.linuxquestions.org/questions/linux-desktop-74/%5Bxbindkeys%5D-advanced-mouse-binds-4175428297/)
