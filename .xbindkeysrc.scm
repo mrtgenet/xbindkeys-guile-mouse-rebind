@@ -142,8 +142,8 @@
 (xbindkey '(alt KP_5) "xset r off; xdotool keyup --window 0 KP_5 key --clearmodifiers --window 0 shift+U00C0; xset r on")
 ;; alt+6 for → (alt+26) : U2192
 (xbindkey '(alt KP_6) "xset r off; xdotool keyup --window 0 KP_6 key --clearmodifiers --window 0 U2192; xset r on")
-;; alt+7 for È (alt+212) : U00C8
-(xbindkey '(alt KP_7) "xset r off; xdotool keyup --window 0 KP_7 key --clearmodifiers --window 0 shift+U00C8; xset r on")
+;; alt+7 for É (alt+144) : U00C9
+(xbindkey '(alt KP_7) "xset r off; xdotool keyup --window 0 KP_7 key --clearmodifiers --window 0 shift+U00C9; xset r on")
 ;; alt+8 for ↑ (alt+24) : U2191
 (xbindkey '(alt KP_8) "xset r off; xdotool keyup --window 0 KP_8 key --clearmodifiers --window 0 U2191; xset r on")
 ;; alt+9 for Ê (alt+210) : U00CA
