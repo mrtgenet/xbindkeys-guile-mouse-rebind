@@ -15,7 +15,8 @@
 ;; v1.2 -- Can trigger events properly if the modifier button is simply pressed and released by itself. Forcefully clears modifier keys when the shoulder buttons are depressed.
 ;; v1.3 -- Now possible to change volume with shoulder button + scroll wheel
 ;; v1.4 -- No more unbalance between left and right channels after using scroll shortcut to set volume up or down
-;; v1.5 -- alt key + numpad keys type special characters (windowish alternative to compose key and ctrl+shift+u methods) - IN PROGRESS
+;; v1.5 -- alt key + numpad keys type special characters (windowish alternative to compose key and ctrl+shift+u methods) 
+;; v1.6 -- Alt key + numpad bindings are not reset after using mouse scroll
 
 ;; SECTION 1: MOUSE SCROLL AND SHOULDER BUTTONS
 
@@ -27,6 +28,32 @@
    (xbindkey-function '("b:9") b9-second-binding)
    ;; Logitech Rear Shoulder Button
    (xbindkey-function '("b:8") b8-second-binding)
+  
+   ;; ALT+NUMPAD SPECIAL CHARACTERS
+
+   ;; Known bug: this may not work with Firefox (see https://stackoverflow.com/questions/65396750/xdotool-key-ignored-by-firefox-while-working-on-other-windows)
+   ;; TODO: Use the real alt codes (i.e. alt+196 instead of alt+0 for '–'
+
+   ;; alt+0 for – (alt+196) : U2013 // windowfocus --sync $(xdotool getactivewindow) sleep 0.125
+   (xbindkey '(alt KP_0) "xset r off; xdotool keyup --window 0 KP_0 key --clearmodifiers --window 0 U2013; xset r on")
+   ;; alt+1 for « (alt+174) : U00AB
+   (xbindkey '(alt KP_1) "xset r off; xdotool keyup --window 0 KP_1 key --clearmodifiers --window 0 U00AB; xset r on")
+   ;; alt+2 for ↓ (alt+25) : U2193
+   (xbindkey '(alt KP_2) "xset r off; xdotool keyup --window 0 KP_2 key --clearmodifiers --window 0 U2193; xset r on")
+   ;; alt+3 for » (alt+175) : U00BB
+   (xbindkey '(alt KP_3) "xset r off; xdotool keyup --window 0 KP_3 key --clearmodifiers --window 0 U00BB; xset r on")
+   ;; alt+4 for ← (alt+27) : U2190
+   (xbindkey '(alt KP_4) "xset r off; xdotool keyup --window 0 KP_4 key --clearmodifiers --window 0 U2190; xset r on")
+   ;; alt+5 for À (alt+183) : U00C0
+   (xbindkey '(alt KP_5) "xset r off; xdotool keyup --window 0 KP_5 key --clearmodifiers --window 0 shift+U00C0; xset r on")
+   ;; alt+6 for → (alt+26) : U2192
+   (xbindkey '(alt KP_6) "xset r off; xdotool keyup --window 0 KP_6 key --clearmodifiers --window 0 U2192; xset r on")
+   ;; alt+7 for É (alt+144) : U00C9
+   (xbindkey '(alt KP_7) "xset r off; xdotool keyup --window 0 KP_7 key --clearmodifiers --window 0 shift+U00C9; xset r on")
+   ;; alt+8 for ↑ (alt+24) : U2191
+   (xbindkey '(alt KP_8) "xset r off; xdotool keyup --window 0 KP_8 key --clearmodifiers --window 0 U2191; xset r on")
+   ;; alt+9 for Ê (alt+210) : U00CA
+   (xbindkey '(alt KP_9) "xset r off; xdotool keyup --window 0 KP_9 key --clearmodifiers --window 0 shift+U00CA; xset r on")
 )
 
 
@@ -122,32 +149,6 @@
       
 ;; (debug)
 (first-binding)
-
-;; SECTION 2: ALT+NUMPAD SPECIAL CHARACTERS
-
-;; Known bug: this may not work with Firefox (see https://stackoverflow.com/questions/65396750/xdotool-key-ignored-by-firefox-while-working-on-other-windows)
-;; TODO: Use the real alt codes (i.e. alt+196 instead of alt+0 for '–'
-
-;; alt+0 for – (alt+196) : U2013 // windowfocus --sync $(xdotool getactivewindow) sleep 0.125
-(xbindkey '(alt KP_0) "xset r off; xdotool keyup --window 0 KP_0 key --clearmodifiers --window 0 U2013; xset r on")
-;; alt+1 for « (alt+174) : U00AB
-(xbindkey '(alt KP_1) "xset r off; xdotool keyup --window 0 KP_1 key --clearmodifiers --window 0 U00AB; xset r on")
-;; alt+2 for ↓ (alt+25) : U2193
-(xbindkey '(alt KP_2) "xset r off; xdotool keyup --window 0 KP_2 key --clearmodifiers --window 0 U2193; xset r on")
-;; alt+3 for » (alt+175) : U00BB
-(xbindkey '(alt KP_3) "xset r off; xdotool keyup --window 0 KP_3 key --clearmodifiers --window 0 U00BB; xset r on")
-;; alt+4 for ← (alt+27) : U2190
-(xbindkey '(alt KP_4) "xset r off; xdotool keyup --window 0 KP_4 key --clearmodifiers --window 0 U2190; xset r on")
-;; alt+5 for À (alt+183) : U00C0
-(xbindkey '(alt KP_5) "xset r off; xdotool keyup --window 0 KP_5 key --clearmodifiers --window 0 shift+U00C0; xset r on")
-;; alt+6 for → (alt+26) : U2192
-(xbindkey '(alt KP_6) "xset r off; xdotool keyup --window 0 KP_6 key --clearmodifiers --window 0 U2192; xset r on")
-;; alt+7 for É (alt+144) : U00C9
-(xbindkey '(alt KP_7) "xset r off; xdotool keyup --window 0 KP_7 key --clearmodifiers --window 0 shift+U00C9; xset r on")
-;; alt+8 for ↑ (alt+24) : U2191
-(xbindkey '(alt KP_8) "xset r off; xdotool keyup --window 0 KP_8 key --clearmodifiers --window 0 U2191; xset r on")
-;; alt+9 for Ê (alt+210) : U00CA
-(xbindkey '(alt KP_9) "xset r off; xdotool keyup --window 0 KP_9 key --clearmodifiers --window 0 shift+U00CA; xset r on")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; End of xbindkeys configuration ;
