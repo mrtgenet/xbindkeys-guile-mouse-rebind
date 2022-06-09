@@ -17,6 +17,7 @@
 ;; v1.4 -- No more unbalance between left and right channels after using scroll shortcut to set volume up or down
 ;; v1.5 -- alt key + numpad keys type special characters (windowish alternative to compose key and ctrl+shift+u methods) 
 ;; v1.6 -- Alt key + numpad bindings are not reset after using mouse scroll
+;; v1.7 -- Option to change main screen brightness using mouse scroll
 
 ;; SECTION 1: MOUSE SCROLL AND SHOULDER BUTTONS
 
@@ -74,7 +75,7 @@
 "Front Shoulder Button Extra Functions"
    (ungrab-all-keys)
    (remove-all-keys)
-
+  
    ;; Scroll Up
    (xbindkey-function '("b:4")
       (lambda ()
@@ -83,7 +84,9 @@
       ;; Emulate Alt+Shift+Tab (previous window) /!\ MAY NOT WORK WITH COVERFLOW ALT-TAB GNOME EXTENSION
          ;;(run-command "xdotool keydown alt keydown shift key Tab keyup alt keyup shift")
       ;; Emulate Control+Shift+Tab (previous tab) 
-         (run-command "xdotool keydown control keydown shift key Tab keyup control keyup shift")
+         ;;(run-command "xdotool keydown control keydown shift key Tab keyup control keyup shift")
+      ;; Emulate main screen brightness up
+         (run-command "gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepUp")
 		   (set! actionperformed 1)
       )
    )
@@ -96,7 +99,9 @@
       ;; Emulate Alt+Tab (next window) /!\ MAY NOT WORK WITH COVERFLOW ALT-TAB GNOME EXTENSION
          ;;(run-command "xdotool keydown alt key Tab keyup alt")
       ;; Emulate Control+Tab (next tab) 
-         (run-command "xdotool keydown control key Tab keyup control")
+         ;;(run-command "xdotool keydown control key Tab keyup control")
+      ;; Emulate main screen brightness down
+         (run-command "gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepDown")
 		   (set! actionperformed 1)
       )
    )
