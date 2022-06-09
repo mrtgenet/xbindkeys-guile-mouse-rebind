@@ -10,7 +10,7 @@ http://www.gnu.org/software/guile/guile.html
 
 You'll need xdotool and xbindkeys with -guile support compiled for this to work (The Ubuntu xbindkeys will have this support by default).
 
-Use `xbindkeys -dg` to generate a default .xbindkeys.scm file in your home folder, which will be used by xbindkeys, and paste the content of my .xbindkeys.scm file as you wish.
+Use `xbindkeys --defaults-guile > ~/.xbindkeysrc.scm` to generate a default .xbindkeysrc.scm file in your home folder, which will be used by xbindkeys, and paste the content of my .xbindkeys.scm file as you wish.
 
 After any modification of this file, use `killall xbindkeys && xbindkeys` to reload with new bindings.
 
