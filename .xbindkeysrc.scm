@@ -18,6 +18,7 @@
 ;; v1.5 -- alt key + numpad keys type special characters (windowish alternative to compose key and ctrl+shift+u methods) 
 ;; v1.6 -- Alt key + numpad bindings are not reset after using mouse scroll
 ;; v1.7 -- Option to change main screen brightness using mouse scroll
+;; v1.8 -- Also change second screen using ddcutil (check https://askubuntu.com/a/1181157 and https://github.com/daitj/gnome-display-brightness-ddcutil)
 
 ;; SECTION 1: MOUSE SCROLL AND SHOULDER BUTTONS
 
@@ -85,9 +86,9 @@
          ;;(run-command "xdotool keydown alt keydown shift key Tab keyup alt keyup shift")
       ;; Emulate Control+Shift+Tab (previous tab) 
          ;;(run-command "xdotool keydown control keydown shift key Tab keyup control keyup shift")
-      ;; Emulate main screen brightness up
-         (run-command "gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepUp")
-		   (set! actionperformed 1)
+      ;; Second (first because slower) and main screen brightness up (must install ddcutil and i2c-tools and add your user to the group i2c, then make sure to select the right bus nbr)
+         (run-command "ddcutil --async --bus 19 --noverify setvcp 10 + 5 && gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepUp")
+		 (set! actionperformed 1)
       )
    )
 
@@ -100,9 +101,9 @@
          ;;(run-command "xdotool keydown alt key Tab keyup alt")
       ;; Emulate Control+Tab (next tab) 
          ;;(run-command "xdotool keydown control key Tab keyup control")
-      ;; Emulate main screen brightness down
-         (run-command "gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepDown")
-		   (set! actionperformed 1)
+      ;; Second (first because slower) and main screen brightness down (must install ddcutil and i2c-tools and add your user to the group i2c, then make sure to select the right bus nbr)
+         (run-command "ddcutil --async --bus 19 --noverify setvcp 10 - 5 && gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepDown")
+		 (set! actionperformed 1)
       )
    )
 
@@ -128,7 +129,7 @@
       ;; Volume up (amixer sometimes causes left/right channels unbalance, prefere using pactl)
          ;;(run-command "amixer -D pulse sset Master 2%+")
          (run-command "pactl set-sink-volume @DEFAULT_SINK@ +2%")
-		   (set! actionperformed 1)
+		 (set! actionperformed 1)
 	   )
    )
 
@@ -138,6 +139,7 @@
       ;; Volume Down (amixer sometimes causes left/right channels unbalance, prefere using pactl)
          ;;(run-command "amixer -D pulse sset Master 2%-")
          (run-command "pactl set-sink-volume @DEFAULT_SINK@ -2%")
+         (set! actionperformed 1)
       )
    )
 
