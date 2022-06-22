@@ -35,7 +35,7 @@ modprobe i2c-dev
 3. Verify that your monitor supports brightness control
 
 ```
-ddcutil capabilities | grep "Feature: 10"
+sudo ddcutil capabilities | grep "Feature: 10"
 ```
 
 4. udev rule for giving group i2c RW permission on the /dev/i2c devices
