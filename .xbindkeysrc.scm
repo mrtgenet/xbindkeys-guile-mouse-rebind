@@ -3,160 +3,271 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; This configuration is guile based.
-;; http://www.gnu.org/software/guile/guile.html
+;;   http://www.gnu.org/software/guile/guile.html
+;; any functions that work in guile will work here.
+;; see EXTRA FUNCTIONS:
 ;; This config script is supposed to live in the homedirectory.
-;; Awesome script created by Zero Angel (https://www.linuxquestions.org/questions/linux-desktop-74/%5Bxbindkeys%5D-advanced-mouse-binds-4175428297/)
-;; Edited and further developped by Martin Genet
-;; This couldnt have been possible without seeing Vee Lee's configuration file
-;; You'll need xdotool and xbindkeys with -guile support compiled for this to work (The Ubuntu xbindkeys will have this support by default).
-;; It assigns keybindings to the scroll wheel  on the fly when mouse modifier keys are pressed. Useful for mice with lots of buttons!
-;; v1.0 -- Shoulder button + scrollwheel bindings
-;; v1.1 -- Fixes some 'stuckness' problems with the modifer keys (ctrl, alt, shift)
-;; v1.2 -- Can trigger events properly if the modifier button is simply pressed and released by itself. Forcefully clears modifier keys when the shoulder buttons are depressed.
-;; v1.3 -- Now possible to change volume with shoulder button + scroll wheel
-;; v1.4 -- No more unbalance between left and right channels after using scroll shortcut to set volume up or down
-;; v1.5 -- alt key + numpad keys type special characters (windowish alternative to compose key and ctrl+shift+u methods) 
-;; v1.6 -- Alt key + numpad bindings are not reset after using mouse scroll
-;; v1.7 -- Option to change main screen brightness using mouse scroll
-;; v1.8 -- Also change second screen using ddcutil (check https://askubuntu.com/a/1181157 and https://github.com/daitj/gnome-display-brightness-ddcutil)
+;; Start of mouse wheel rebind at l.168
 
-;; SECTION 1: MOUSE SCROLL AND SHOULDER BUTTONS
+;; Version: 1.8.7
+
+;; If you edit this file, do not forget to uncomment any lines
+;; that you change.
+;; The semicolon(;) symbol may be used anywhere for comments.
+
+;; To specify a key, you can use 'xbindkeys --key' or
+;; 'xbindkeys --multikey' and put one of the two lines in this file.
+
+;; A list of keys is in /usr/include/X11/keysym.h and in
+;; /usr/include/X11/keysymdef.h
+;; The XK_ is not needed.
+
+;; List of modifier:
+;;   Release, Control, Shift, Mod1 (Alt), Mod2 (NumLock),
+;;   Mod3 (CapsLock), Mod4, Mod5 (Scroll).
+
+
+;; The release modifier is not a standard X modifier, but you can
+;; use it if you want to catch release instead of press events
+
+;; By defaults, xbindkeys does not pay attention to modifiers
+;; NumLock, CapsLock and ScrollLock.
+;; Uncomment the lines below if you want to use them.
+;; To dissable them, call the functions with #f
+
+
+;;;;EXTRA FUNCTIONS: Enable numlock, scrolllock or capslock usage
+;;(set-numlock! #t)
+;;(set-scrolllock! #t)
+;;(set-capslock! #t)
+
+;;;;; Scheme API reference
+;;;;
+;; Optional modifier state:
+;; (set-numlock! #f or #t)
+;; (set-scrolllock! #f or #t)
+;; (set-capslock! #f or #t)
+;; 
+;; Shell command key:
+;; (xbindkey key "foo-bar-command [args]")
+;; (xbindkey '(modifier* key) "foo-bar-command [args]")
+;; 
+;; Scheme function key:
+;; (xbindkey-function key function-name-or-lambda-function)
+;; (xbindkey-function '(modifier* key) function-name-or-lambda-function)
+;; 
+;; Other functions:
+;; (remove-xbindkey key)
+;; (run-command "foo-bar-command [args]")
+;; (grab-all-keys)
+;; (ungrab-all-keys)
+;; (remove-all-keys)
+;; (debug)
+
+
+;; Examples of commands:
+
+;;(xbindkey '(control shift q) "xbindkeys_show")
+
+;; set directly keycode (here control + f with my keyboard)
+;; (xbindkey '("m:0x4" "c:41") "xterm")
+
+;; specify a mouse button
+;; (xbindkey '(control "b:2") "xterm")
+
+;;(xbindkey '(shift mod2 alt s) "xterm -geom 50x20+20+20")
+
+;; set directly keycode (control+alt+mod2 + f with my keyboard)
+;;(xbindkey '(alt "m:4" mod2 "c:0x29") "xterm")
+
+;; Control+Shift+a  release event starts rxvt
+;;(xbindkey '(release control shift a) "rxvt")
+
+;; Control + mouse button 2 release event starts rxvt
+;;(xbindkey '(releace control "b:2") "rxvt")
+
+
+;; Extra features
+;; (xbindkey-function '(control a)
+;;      	   (lambda ()
+;;      	     (display "Hello from Scheme!")
+;;      	     (newline)))
+
+;; (xbindkey-function '(shift p)
+;;      	   (lambda ()
+;;      	     (run-command "xterm")))
+
+
+;; Double click test
+;; (xbindkey-function '(control w)
+;;      	   (let ((count 0))
+;;      	     (lambda ()
+;;      	       (set! count (+ count 1))
+;;      	       (if (> count 1)
+;;      		   (begin
+;;      		    (set! count 0)
+;;      		    (run-command "xterm"))))))
+
+;; Time double click test:
+;;  - short double click -> run an xterm
+;;  - long  double click -> run an rxvt
+;; (xbindkey-function '(shift w)
+;;      	   (let ((time (current-time))
+;;      		 (count 0))
+;;      	     (lambda ()
+;;      	       (set! count (+ count 1))
+;;      	       (if (> count 1)
+;;      		   (begin
+;;      		    (if (< (- (current-time) time) 1)
+;;      			(run-command "xterm")
+;;      			(run-command "rxvt"))
+;;      		    (set! count 0)))
+;;      	       (set! time (current-time)))))
+
+
+;; Chording keys test: Start differents program if only one key is
+;; pressed or another if two keys are pressed.
+;; If key1 is pressed start cmd-k1
+;; If key2 is pressed start cmd-k2
+;; If both are pressed start cmd-k1-k2 or cmd-k2-k1 following the
+;;   release order
+;; (define (define-chord-keys key1 key2 cmd-k1 cmd-k2 cmd-k1-k2 cmd-k2-k1)
+;;     "Define chording keys"
+;;   (let ((k1 #f) (k2 #f))
+;;     (xbindkey-function key1 (lambda () (set! k1 #t)))
+;;     (xbindkey-function key2 (lambda () (set! k2 #t)))
+;;     (xbindkey-function (cons 'release key1)
+;;      	       (lambda ()
+;;      		 (if (and k1 k2)
+;;      		     (run-command cmd-k1-k2)
+;;      		     (if k1 (run-command cmd-k1)))
+;;      		 (set! k1 #f) (set! k2 #f)))
+;;     (xbindkey-function (cons 'release key2)
+;;      	       (lambda ()
+;;      		 (if (and k1 k2)
+;;      		     (run-command cmd-k2-k1)
+;;      		     (if k2 (run-command cmd-k2)))
+;;      		 (set! k1 #f) (set! k2 #f)))))
+
+
+;; Example:
+;;   Shift + b:1                   start an xterm
+;;   Shift + b:3                   start an rxvt
+;;   Shift + b:1 then Shift + b:3  start gv
+;;   Shift + b:3 then Shift + b:1  start xpdf
+
+;; (define-chord-keys '(shift "b:1") '(shift "b:3")
+;;   "xterm" "rxvt" "gv" "xpdf")
+
+;; Here the release order have no importance
+;; (the same program is started in both case)
+;; (define-chord-keys '(alt "b:1") '(alt "b:3")
+;;   "gv" "xpdf" "xterm" "xterm")
+
+
+;; START OF MOUS WHEEL REBIND
 
 (define actionperformed 0)
 
 (define (first-binding)
 "First binding"
-   ;; Logitech Front Shoulder Button
-   (xbindkey-function '("b:9") b9-second-binding)
-   ;; Logitech Rear Shoulder Button
-   (xbindkey-function '("b:8") b8-second-binding)
-  
-   ;; ALT+NUMPAD SPECIAL CHARACTERS
-
-   ;; Known bug: this may not work with Firefox (see https://stackoverflow.com/questions/65396750/xdotool-key-ignored-by-firefox-while-working-on-other-windows)
-   ;; TODO: Use the real alt codes (i.e. alt+196 instead of alt+0 for '–'
-
-   ;; alt+0 for – (alt+196) : U2013 // windowfocus --sync $(xdotool getactivewindow) sleep 0.125
-   (xbindkey '(alt KP_0) "xset r off; xdotool keyup --window 0 KP_0 key --clearmodifiers --window 0 U2013; xset r on")
-   ;; alt+1 for « (alt+174) : U00AB
-   (xbindkey '(alt KP_1) "xset r off; xdotool keyup --window 0 KP_1 key --clearmodifiers --window 0 U00AB; xset r on")
-   ;; alt+2 for ↓ (alt+25) : U2193
-   (xbindkey '(alt KP_2) "xset r off; xdotool keyup --window 0 KP_2 key --clearmodifiers --window 0 U2193; xset r on")
-   ;; alt+3 for » (alt+175) : U00BB
-   (xbindkey '(alt KP_3) "xset r off; xdotool keyup --window 0 KP_3 key --clearmodifiers --window 0 U00BB; xset r on")
-   ;; alt+4 for ← (alt+27) : U2190
-   (xbindkey '(alt KP_4) "xset r off; xdotool keyup --window 0 KP_4 key --clearmodifiers --window 0 U2190; xset r on")
-   ;; alt+5 for À (alt+183) : U00C0
-   (xbindkey '(alt KP_5) "xset r off; xdotool keyup --window 0 KP_5 key --clearmodifiers --window 0 shift+U00C0; xset r on")
-   ;; alt+6 for → (alt+26) : U2192
-   (xbindkey '(alt KP_6) "xset r off; xdotool keyup --window 0 KP_6 key --clearmodifiers --window 0 U2192; xset r on")
-   ;; alt+7 for É (alt+144) : U00C9
-   (xbindkey '(alt KP_7) "xset r off; xdotool keyup --window 0 KP_7 key --clearmodifiers --window 0 shift+U00C9; xset r on")
-   ;; alt+8 for ↑ (alt+24) : U2191
-   (xbindkey '(alt KP_8) "xset r off; xdotool keyup --window 0 KP_8 key --clearmodifiers --window 0 U2191; xset r on")
-   ;; alt+9 for Ê (alt+210) : U00CA
-   (xbindkey '(alt KP_9) "xset r off; xdotool keyup --window 0 KP_9 key --clearmodifiers --window 0 shift+U00CA; xset r on")
+  ;; Mouse Front Shoulder Button
+  (xbindkey-function '("b:9") b9-second-binding)
+  ;; Mouse Rear Shoulder Button
+  (xbindkey-function '("b:8") b8-second-binding)
 )
-
 
 (define (reset-first-binding)
 "Reset first binding"
-   (ungrab-all-keys)
-   (remove-all-keys)
-   ;; Set Action Performed state back to 0
-   (set! actionperformed 0)
-   ;; Forcefully release all modifier keys!
-   (run-command "xdotool keyup ctrl keyup alt keyup shift keyup super&")
-   (first-binding)
-   (grab-all-keys)
-)
-
-
-(define (b9-second-binding)
-"Front Shoulder Button Extra Functions"
-   (ungrab-all-keys)
-   (remove-all-keys)
-  
-   ;; Scroll Up
-   (xbindkey-function '("b:4")
-      (lambda ()
-      ;; Emulate Ctrl+Alt+Up (Workspace Up)
-         ;;(run-command "xdotool keydown ctrl keydown alt key Up keyup ctrl keyup alt&")
-      ;; Emulate Alt+Shift+Tab (previous window) /!\ MAY NOT WORK WITH COVERFLOW ALT-TAB GNOME EXTENSION
-         ;;(run-command "xdotool keydown alt keydown shift key Tab keyup alt keyup shift")
-      ;; Emulate Control+Shift+Tab (previous tab) 
-         ;;(run-command "xdotool keydown control keydown shift key Tab keyup control keyup shift")
-      ;; Second (first because slower) and main screen brightness up (must install ddcutil and i2c-tools and add your user to the group i2c, then make sure to select the right bus nbr)
-         (run-command "ddcutil --async --bus 19 --noverify setvcp 10 + 5 && gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepUp")
-		 (set! actionperformed 1)
-      )
-   )
-
-   ;; Scroll Down
-   (xbindkey-function '("b:5")
-      (lambda ()
-      ;; Emulate Ctrl+Alt+Down (Workspace Down)
-         ;;(run-command "xdotool keydown ctrl keydown alt key Down keyup ctrl keyup alt&")
-      ;; Emulate Alt+Tab (next window) /!\ MAY NOT WORK WITH COVERFLOW ALT-TAB GNOME EXTENSION
-         ;;(run-command "xdotool keydown alt key Tab keyup alt")
-      ;; Emulate Control+Tab (next tab) 
-         ;;(run-command "xdotool keydown control key Tab keyup control")
-      ;; Second (first because slower) and main screen brightness down (must install ddcutil and i2c-tools and add your user to the group i2c, then make sure to select the right bus nbr)
-         (run-command "ddcutil --async --bus 19 --noverify setvcp 10 - 5 && gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepDown")
-		 (set! actionperformed 1)
-      )
-   )
-
-   (xbindkey-function '(release "b:9") 
-      (lambda ()
-      ;; Perform Action if Button 8 is pressed and released by itself (uncomment line below for debug)
-         ;;(if (= actionperformed 0) (run-command "zenity --info --title=hi --text=Button9ReleaseEvent &"))
-         (reset-first-binding)
-      )
-   )
-   
-   (grab-all-keys)
+  (ungrab-all-keys)
+  (remove-all-keys)
+  ;; Set Action Performed state back to 0
+  (set! actionperformed 0)
+  ;; Forcefully release all modifier keys!
+  (run-command "xdotool keyup ctrl keyup alt keyup shift keyup super&")
+  (first-binding)
+  (grab-all-keys)
 )
 
 (define (b8-second-binding)
 "Rear Shoulder Button Extra Functions"
-   (ungrab-all-keys)
-   (remove-all-keys)
-
-   ;; Scroll Up
-   (xbindkey-function '("b:4")
-      (lambda ()
+  (ungrab-all-keys)
+  (remove-all-keys)
+  ;; Scroll Up
+  (xbindkey-function '("b:4")
+    (lambda ()
       ;; Volume up (amixer sometimes causes left/right channels unbalance, prefere using pactl)
-         ;;(run-command "amixer -D pulse sset Master 2%+")
-         (run-command "pactl set-sink-volume @DEFAULT_SINK@ +2%")
-		 (set! actionperformed 1)
-	   )
-   )
-
-   ;; Scroll Down
-   (xbindkey-function '("b:5")
-      (lambda ()
+      ;;(run-command "amixer -D pulse sset Master 2%+")
+      (run-command "pactl set-sink-volume @DEFAULT_SINK@ +2%")
+      (set! actionperformed 1)
+    )
+  )
+  ;; Scroll Down
+  (xbindkey-function '("b:5")
+    (lambda ()
       ;; Volume Down (amixer sometimes causes left/right channels unbalance, prefere using pactl)
-         ;;(run-command "amixer -D pulse sset Master 2%-")
-         (run-command "pactl set-sink-volume @DEFAULT_SINK@ -2%")
-         (set! actionperformed 1)
-      )
-   )
-
-   (xbindkey-function '(release "b:8") 
-      (lambda ()
+      ;;(run-command "amixer -D pulse sset Master 2%-")
+      (run-command "pactl set-sink-volume @DEFAULT_SINK@ -2%")
+      (set! actionperformed 1)
+    )
+  )
+  ;; Release
+  (xbindkey-function '(release "b:8") 
+    (lambda ()
       ;; Perform Action if Button 8 is pressed and released by itself (uncomment line below for debug)
-         ;;(if (= actionperformed 0) (run-command "zenity --info --title=hi --text=Button8ReleaseEvent &"))
-         (reset-first-binding)
-      )
-   )
-   
-   (grab-all-keys)
+      ;;(if (= actionperformed 0) (run-command "zenity --info --title=hi --text=Button8ReleaseEvent &"))
+      (reset-first-binding)
+    )
+  )
+  (grab-all-keys)
 )
-      
+
+(define (b9-second-binding)
+"Front Shoulder Button Extra Functions"
+  (ungrab-all-keys)
+  (remove-all-keys)
+  ;; Scroll Up
+  (xbindkey-function '("b:4")
+    (lambda ()
+      ;; Emulate Ctrl+Alt+Up (Workspace Up)
+      ;;(run-command "xdotool keydown ctrl keydown alt key Up keyup ctrl keyup alt&")
+      ;; Emulate Alt+Shift+Tab (previous window) 
+      ;;(run-command "xdotool keydown alt keydown shift key Tab keyup alt keyup shift")
+      ;; Emulate Control+Shift+Tab (previous tab) 
+      ;;(run-command "xdotool keydown control keydown shift key Tab keyup control keyup shift")
+      ;; Second (first because slower) and main screen brightness up (must install ddcutil and i2c-tools and add your user to the group i2c, then make sure to select the right bus nbr)
+      ;;(run-command "ddcutil --async --bus 19 --noverify setvcp 10 + 5 && gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepUp")
+      (set! actionperformed 1)
+    )
+  )
+  ;; Scroll Down
+  (xbindkey-function '("b:5")
+    (lambda ()
+      ;; Emulate Ctrl+Alt+Down (Workspace Down)
+      ;;(run-command "xdotool keydown ctrl keydown alt key Down keyup ctrl keyup alt&")
+      ;; Emulate Alt+Tab (next window)
+      ;;(run-command "xdotool keydown alt key Tab keyup alt")
+      ;; Emulate Control+Tab (next tab) 
+      ;;(run-command "xdotool keydown control key Tab keyup control")
+      ;; Second (first because slower) and main screen brightness down (must install ddcutil and i2c-tools and add your user to the group i2c, then make sure to select the right bus nbr)
+      ;;(run-command "ddcutil --async --bus 19 --noverify setvcp 10 - 5 && gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepDown")
+      (set! actionperformed 1)
+    )
+  )
+  ;; Release
+  (xbindkey-function '(release "b:9") 
+    (lambda ()
+      ;; Perform Action if Button 8 is pressed and released by itself (uncomment line below for debug)
+      ;;(if (= actionperformed 0) (run-command "zenity --info --title=hi --text=Button9ReleaseEvent &"))
+      (reset-first-binding)
+    )
+  )
+  (grab-all-keys)
+)
+
 ;; (debug)
 (first-binding)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; End of xbindkeys configuration ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; End of xbindkeys guile configuration ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
